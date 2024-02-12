@@ -1,7 +1,7 @@
 from pygame import *
 import pyganim
 
-MOVE_SPEED = 7
+MOVE_SPEED = 8
 WIDTH = 32
 HEIGHT = 22
 COLOR = (0, 0, 0)
