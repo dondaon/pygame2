@@ -5,14 +5,18 @@ import os
 MONSTER_WIDTH = 32
 MONSTER_HEIGHT = 32
 MONSTER_COLOR = "#2110FF"
-ICON_DIR = os.path.dirname(__file__)  # Полный путь к каталогу с файлами
+ICON_DIR = os.path.dirname('../enemy')  # Полный путь к каталогу с файлами
 
-ANIMATION_MONSTERHORYSONTAL = [('%s/monsters/fire1.png' % ICON_DIR),
-                               ('%s/monsters/fire2.png' % ICON_DIR)]
+ANIMATION_MONSTERHORYSONTAL = [('../enemy/Walk.png' % ICON_DIR),
+                               ('../enemy/Walk (1).png' % ICON_DIR),
+                               ('../enemy/Walk (2).png' % ICON_DIR),
+                               ('../enemy/Walk (3).png' % ICON_DIR),
+                               ('../enemy/Walk (4).png' % ICON_DIR),
+                               ('../enemy/Walk (5).png' % ICON_DIR)]
 
 
 class Monster(sprite.Sprite):
-    def __init__(self, x, y, left, up, maxLengthLeft, maxLengthUp):
+    def __init__(self, x, y, maxLengthLeft, maxLengthUp):
         sprite.Sprite.__init__(self)
         self.image = Surface((MONSTER_WIDTH, MONSTER_HEIGHT))
         self.image.fill(Color(MONSTER_COLOR))
@@ -22,8 +26,6 @@ class Monster(sprite.Sprite):
         self.startY = y
         self.maxLengthLeft = maxLengthLeft
         self.maxLengthUp = maxLengthUp
-        self.xvel = left
-        self.yvel = up
         boltAnim = []
         for anim in ANIMATION_MONSTERHORYSONTAL:
             boltAnim.append((anim, 0.3))
