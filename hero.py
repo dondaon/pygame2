@@ -1,137 +1,112 @@
-from pygame import *
-import pyganim
-
-MOVE_SPEED = 8
-WIDTH = 32
-HEIGHT = 22
-COLOR = (0, 0, 0)
-JUMP_POWER = 9
-GRAVITY = 0.35
-MOVE_EXTRA_SPEED = 2.5  # Ускорение
-JUMP_EXTRA_POWER = 1   # дополнительная сила прыжка
-ANIMATION_SUPER_SPEED_DELAY = 500 # скорость смены кадров при ускорении
-ANIMATION_RIGHT = [('cat/Walk_r_1.png'), ('cat/Walk_r_2.png'), ('cat/Walk_r_3.png'),
-                   ('cat/Walk_r_4.png'), ('cat/Walk_r_5.png'), ('cat/Walk_r_6.png')]
-ANIMATION_LEFT = [('cat/Walk_l_1.png'), ('cat/Walk_l_2.png'), ('cat/Walk_l_3.png'),
-                  ('cat/Walk_l_4.png'), ('cat/Walk_l_5.png'), ('cat/Walk_l_6.png')]
-ANIMATION_STAY = [('cat/Idle (1).png'), ('cat/Idle (2).png'), ('cat/Idle (3).png'), ('cat/Idle.png')]
-ANIMATION_JUMP_LEFT = [('cat/Walk_l_4.png', 100)]
-ANIMATION_JUMP_RIGHT = [('cat/Walk_r_3.png', 100)]
-ANIMATION_DELAY = 100
+import pygame
+from os import walk
+from math import sin
 
 
-class Player(sprite.Sprite):
-    def __init__(self, x, y):
-        sprite.Sprite.__init__(self)
-        self.xvel = 0  # скорость перемещения
-        self.startX = x  # Начальная позиция Х, Y
-        self.startY = y
-        self.image = Surface((WIDTH, HEIGHT))
-        self.rect = Rect(x, y, WIDTH, HEIGHT)
-        self.yvel = 0  # скорость вертикального перемещения
-        self.onGround = False
-        self.image.set_colorkey((0, 0, 0))
-        # Анимация движения вправо
-        boltAnim = []
-        boltAnimSuperSpeed = []
-        for anim in ANIMATION_RIGHT:
-            boltAnim.append((anim, ANIMATION_DELAY))
-            boltAnimSuperSpeed.append((anim, ANIMATION_SUPER_SPEED_DELAY))
-        self.boltAnimRight = pyganim.PygAnimation(boltAnim)
-        self.boltAnimRight.play()
-        self.boltAnimRightSuperSpeed = pyganim.PygAnimation(boltAnimSuperSpeed)
-        self.boltAnimRightSuperSpeed.play()
-        # Анимация движения влево
-        boltAnim = []
-        boltAnimSuperSpeed = []
-        for anim in ANIMATION_LEFT:
-            boltAnim.append((anim, ANIMATION_DELAY))
-            boltAnimSuperSpeed.append((anim, ANIMATION_SUPER_SPEED_DELAY))
-        self.boltAnimLeft = pyganim.PygAnimation(boltAnim)
-        self.boltAnimLeft.play()
-        self.boltAnimLeftSuperSpeed = pyganim.PygAnimation(boltAnimSuperSpeed)
-        self.boltAnimLeftSuperSpeed.play()
-        # Анимация без движения
-        boltAnim = []
-        for anim in ANIMATION_STAY:
-            boltAnim.append((anim, ANIMATION_DELAY))
-        self.boltAnimStay = pyganim.PygAnimation(boltAnim)
-        self.boltAnimStay.play()
-        self.boltAnimStay.blit(self.image, (0, 0))
+def import_folder(path):
+    surface_list = []
 
-        self.boltAnimJumpLeft = pyganim.PygAnimation(ANIMATION_JUMP_LEFT)
-        self.boltAnimJumpLeft.play()
+    for _, __, image_files in walk(path):
+        for image in image_files:
+            full_path = path + '/' + image
+            image_surf = pygame.image.load(full_path).convert_alpha()
+            surface_list.append(image_surf)
 
-        self.boltAnimJumpRight = pyganim.PygAnimation(ANIMATION_JUMP_RIGHT)
-        self.boltAnimJumpRight.play()
+    return surface_list
 
-    def update(self, left, right, up, running, platforms):
-        if up:
-            if self.onGround:  # прыгаем, только когда можем оттолкнуться от земли
-                self.yvel = -JUMP_POWER
-                if running and (left or right):  # если есть ускорение и мы движемся
-                    self.yvel -= JUMP_EXTRA_POWER  # то прыгаем выше
-                self.image.fill(Color(COLOR))
-                if left:
-                    self.boltAnimJumpLeft.blit(self.image, (0, 0))
-                else:
-                    self.boltAnimJumpRight.blit(self.image, (0, 0))
-        if left:
-            self.xvel = -MOVE_SPEED  # Лево = x- n
-            self.image.fill(Color(COLOR))
-            if running:  # если ускорение
-                self.xvel -= MOVE_EXTRA_SPEED  # то передвигаемся быстрее
-                if not up:  # и если не прыгаем
-                    self.boltAnimLeftSuperSpeed.blit(self.image, (0, 0))  # то отображаем быструю анимацию
-            else:  # если не бежим
-                if not up:  # и не прыгаем
-                    self.boltAnimLeft.blit(self.image, (0, 0))  # отображаем анимацию движения
-            if up:  # если же прыгаем
-                self.boltAnimJumpLeft.blit(self.image, (0, 0))  # отображаем анимацию прыжка
 
-        if right:
-            self.xvel = MOVE_SPEED  # Право = x + n
-            self.image.fill(Color(COLOR))
-            if running:
-                self.xvel += MOVE_EXTRA_SPEED
-                if not up:
-                    self.boltAnimRightSuperSpeed.blit(self.image, (0, 0))
+class Player(pygame.sprite.Sprite):
+    def __init__(self, pos, surface):
+        super().__init__()
+        self.import_character_assets()
+        self.frame_index = 0
+        self.animation_speed = 0.15
+        self.image = self.animations['idle'][self.frame_index]
+        self.rect = self.image.get_rect(topleft=pos)
+
+        # player movement
+        self.direction = pygame.math.Vector2(0, 0)
+        self.speed = 8
+        self.gravity = 0.8
+        self.jump_speed = -16
+
+        # player status
+        self.status = 'idle'
+        self.facing_right = True
+        self.on_ground = False
+        self.on_ceiling = False
+        self.on_left = False
+        self.on_right = False
+
+    def import_character_assets(self):
+        character_path = 'cat/'
+        self.animations = {'idle': [], 'run': [], 'jump': [], 'fall': []}
+
+        for animation in self.animations.keys():
+            full_path = character_path + animation
+            self.animations[animation] = import_folder(full_path)
+
+    def animate(self):
+        animation = self.animations[self.status]
+
+        self.frame_index += self.animation_speed
+        if self.frame_index >= len(animation):
+            self.frame_index = 0
+
+        image = animation[int(self.frame_index)]
+        if self.facing_right:
+            self.image = image
+        else:
+            flipped_image = pygame.transform.flip(image, True, False)
+            self.image = flipped_image
+
+        if self.on_ground and self.on_right:
+            self.rect = self.image.get_rect(bottomright=self.rect.bottomright)
+        elif self.on_ground and self.on_left:
+            self.rect = self.image.get_rect(bottomleft=self.rect.bottomleft)
+        elif self.on_ground:
+            self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
+        elif self.on_ceiling and self.on_right:
+            self.rect = self.image.get_rect(topright=self.rect.topright)
+        elif self.on_ceiling and self.on_left:
+            self.rect = self.image.get_rect(topleft=self.rect.topleft)
+        elif self.on_ceiling:
+            self.rect = self.image.get_rect(midtop=self.rect.midtop)
+
+    def get_input(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_RIGHT]:
+            self.direction.x = 1
+            self.facing_right = True
+        elif keys[pygame.K_LEFT]:
+            self.direction.x = -1
+            self.facing_right = False
+        else:
+            self.direction.x = 0
+
+        if keys[pygame.K_SPACE] and self.on_ground:
+            self.jump()
+
+    def get_status(self):
+        if self.direction.y < 0:
+            self.status = 'jump'
+        elif self.direction.y > 1:
+            self.status = 'fall'
+        else:
+            if self.direction.x != 0:
+                self.status = 'run'
             else:
-                if not up:
-                    self.boltAnimRight.blit(self.image, (0, 0))
-            if up:
-                self.boltAnimJumpRight.blit(self.image, (0, 0))
+                self.status = 'idle'
 
-        if not (left or right):
-            self.xvel = 0
-            self.image.fill(Color(COLOR))
-            self.boltAnimStay.blit(self.image, (0, 0))
+    def apply_gravity(self):
+        self.direction.y += self.gravity
+        self.rect.y += self.direction.y
 
-        if not self.onGround:
-            self.yvel += GRAVITY
+    def jump(self):
+        self.direction.y = self.jump_speed
 
-        self.onGround = False
-        self.rect.y += self.yvel
-        self.collide(0, self.yvel, platforms)
-
-        self.rect.x += self.xvel
-        self.collide(self.xvel, 0, platforms)
-
-    def collide(self, xvel, yvel, platforms):
-        for p in platforms:
-            if sprite.collide_rect(self, p):  # пересечение платформы с игроком
-
-                if xvel > 0:  # если движется вправо
-                    self.rect.right = p.rect.left
-
-                if xvel < 0:  # если движется влево
-                    self.rect.left = p.rect.right
-
-                if yvel > 0:  # если падает вниз
-                    self.rect.bottom = p.rect.top
-                    self.onGround = True
-                    self.yvel = 0
-
-                if yvel < 0:  # если движется вверх
-                    self.rect.top = p.rect.bottom
-                    self.yvel = 0
+    def update(self):
+        self.get_input()
+        self.get_status()
+        self.animate()

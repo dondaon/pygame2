@@ -3,18 +3,16 @@ from main import main
 
 
 def intro():
-    size = width, height = (800, 640)
+    size = width, height = (1200, 384)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     fps = 60
 
-    fon = pygame.image.load("intro.jpg")
+    fon = pygame.transform.scale(pygame.image.load('intro.jpg'), (1200, 384))
     screen.blit(fon, (0, 0))
-    text = ['Кот по кличке Барсик был уважаемым членом уличной банды в городе.',
-            'Однако, однажды его лидер выгнал его из банды, обвинив невиновного. ',
-            'Гордый и обиженный Барсик решил, что пришло время мстить бывшим "друзьям".',
-            'Пытаясь найти способ вернуться и дать отпор банде, Барсик',
-            'случайно попадает в запутанное подземелье, полное опасностей.',
+    text = ['Кот по кличке Барсик был уважаемым членом уличной банды в городе. Однако, однажды его лидер выгнал его из банды,',
+            'обвинив невиновного. Гордый и обиженный Барсик решил, что пришло время мстить бывшим "друзьям".',
+            'Пытаясь найти способ вернуться и дать отпор банде, Барсик случайно попадает в запутанное подземелье, полное опасностей.',
             'Он должен пройти через множество испытаний, чтобы выбраться из этого лабиринта...']
 
     pygame.font.init()
@@ -22,7 +20,7 @@ def intro():
     font2 = pygame.font.Font(None, 60)
     text2 = font2.render('Предыстория', True, (255, 255, 255))
     text3 = font.render('Нажмите любую клавишу, чтобы начать!', True, (255, 255, 255))
-    text_coord = 200
+    text_coord = 150
     for line in text:
         string = font.render(line, 1, pygame.Color('white'))
         string_rect = string.get_rect()
@@ -42,4 +40,6 @@ def intro():
                 main()
         pygame.display.flip()
         clock.tick(fps)
-    intro()
+
+
+intro()
