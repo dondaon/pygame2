@@ -1,6 +1,5 @@
 import pygame
 from os import walk
-from math import sin
 
 
 def import_folder(path):

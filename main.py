@@ -8,10 +8,7 @@ tile_size = 24
 screen_height = vertical_tile_number * tile_size
 screen_width = 1200
 screen = pygame.display.set_mode((screen_width, screen_height))
-bg = pygame.Surface((1200, 384))
-fon = pygame.transform.scale(pygame.image.load('output_348845950_0.jpg'), (1200, 384))
-bg.blit(fon, (0, 0))
-screen.blit(bg, (0, 0))
+
 
 class Game:
     def __init__(self):

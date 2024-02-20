@@ -1,54 +1,66 @@
-from pygame import *
-import pyganim
-import os
-
-MONSTER_WIDTH = 32
-MONSTER_HEIGHT = 32
-MONSTER_COLOR = "#2110FF"
-ICON_DIR = os.path.dirname('../enemy')  # Полный путь к каталогу с файлами
-
-ANIMATION_MONSTERHORYSONTAL = [('../enemy/Walk.png' % ICON_DIR),
-                               ('../enemy/Walk (1).png' % ICON_DIR),
-                               ('../enemy/Walk (2).png' % ICON_DIR),
-                               ('../enemy/Walk (3).png' % ICON_DIR),
-                               ('../enemy/Walk (4).png' % ICON_DIR),
-                               ('../enemy/Walk (5).png' % ICON_DIR)]
+import pygame
+from random import randint
+from hero import import_folder
 
 
-class Monster(sprite.Sprite):
-    def __init__(self, x, y, maxLengthLeft, maxLengthUp):
-        sprite.Sprite.__init__(self)
-        self.image = Surface((MONSTER_WIDTH, MONSTER_HEIGHT))
-        self.image.fill(Color(MONSTER_COLOR))
-        self.rect = Rect(x, y, MONSTER_WIDTH, MONSTER_HEIGHT)
-        self.image.set_colorkey(Color(MONSTER_COLOR))
-        self.startX = x  # начальные координаты
-        self.startY = y
-        self.maxLengthLeft = maxLengthLeft
-        self.maxLengthUp = maxLengthUp
-        boltAnim = []
-        for anim in ANIMATION_MONSTERHORYSONTAL:
-            boltAnim.append((anim, 0.3))
-        self.boltAnim = pyganim.PygAnimation(boltAnim)
-        self.boltAnim.play()
+class Bloc(pygame.sprite.Sprite):
+    def __init__(self, size, x, y, val):
+        super().__init__()
+        self.image = pygame.Surface((size, size))
+        offset_y = y + size
+        self.image = pygame.image.load(f'blocks/{val}.png').convert_alpha()
+        self.rect = self.image.get_rect(bottomleft=(x, offset_y))
 
-    def update(self, platforms):  # по принципу героя
+    def update(self, shift):
+        self.rect.x += shift
 
-        self.image.fill(Color(MONSTER_COLOR))
-        self.boltAnim.blit(self.image, (0, 0))
 
-        self.rect.y += self.yvel
-        self.rect.x += self.xvel
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, size, x, y):
+        super().__init__()
+        self.image = pygame.Surface((size, size))
+        self.rect = self.image.get_rect(topleft=(x, y))
 
-        self.collide(platforms)
+    def update(self, shift):
+        self.rect.x += shift
 
-        if (abs(self.startX - self.rect.x) > self.maxLengthLeft):
-            self.xvel = -self.xvel  # если прошли максимальное растояние, то идеи в обратную сторону
-        if (abs(self.startY - self.rect.y) > self.maxLengthUp):
-            self.yvel = -self.yvel  # если прошли максимальное растояние, то идеи в обратную сторону, вертикаль
 
-    def collide(self, platforms):
-        for p in platforms:
-            if sprite.collide_rect(self, p) and self != p:  # если с чем-то или кем-то столкнулись
-                self.xvel = - self.xvel  # то поворачиваем в обратную сторону
-                self.yvel = - self.yvel
+class AnimatedTile(Tile):
+    def __init__(self, size, x, y, path):
+        super().__init__(size, x, y)
+        self.frames = import_folder(path)
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index]
+
+    def animate(self):
+        self.frame_index += 0.15
+        if self.frame_index >= len(self.frames):
+            self.frame_index = 0
+        self.image = self.frames[int(self.frame_index)]
+
+    def update(self, shift):
+        self.animate()
+        self.rect.x += 0
+
+
+class Enemy(AnimatedTile):
+    def __init__(self, size, x, y):
+        super().__init__(size, x, y, 'enemy/run')
+        self.rect.y += size - self.image.get_size()[1]
+        self.speed = randint(3, 5)
+
+    def move(self):
+        self.rect.x += self.speed
+
+    def reverse_image(self):
+        if self.speed > 0:
+            self.image = pygame.transform.flip(self.image, True, False)
+
+    def reverse(self):
+        self.speed *= -1
+
+    def update(self, shift):
+        self.rect.x += shift
+        self.animate()
+        self.move()
+        self.reverse_image()

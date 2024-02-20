@@ -1,5 +1,6 @@
 from csv import reader
 from hero import Player
+from monsters import Enemy, Tile, Bloc
 import pygame
 
 vertical_tile_number = 11
@@ -18,18 +19,6 @@ def import_csv_layout(path):
         return terrain_map
 
 
-class Tile(pygame.sprite.Sprite):
-    def __init__(self, size, x, y, val):
-        super().__init__()
-        self.image = pygame.Surface((size, size))
-        offset_y = y + size
-        self.image = pygame.image.load(f'blocks/{val}.png').convert_alpha()
-        self.rect = self.image.get_rect(bottomleft=(x, offset_y))
-
-    def update(self, shift):
-        self.rect.x += shift
-
-
 class Level:
     def __init__(self, lvl, surface):
         # general setup
@@ -44,23 +33,39 @@ class Level:
         self.goal = pygame.sprite.GroupSingle()
         self.player_setup(layout)
 
-        # enemy
-        self.enemy_sprites = self.create_tile_group(layout)
+        # sprites
+        self.enemy_sprites = self.create_tile_group(layout, 'en')
+        self.collidable_sprites = self.create_tile_group(layout, 'co')
+        self.constraint_sprites = self.create_tile_group(layout, 'con')
+        self.noncollidable_sprites = self.create_tile_group(layout, 'non')
 
-    def create_tile_group(self, layout):
+    def create_tile_group(self, layout, t):
         sprite_group = pygame.sprite.Group()
 
         for row_index, row in enumerate(layout):
             for col_index, val in enumerate(row):
-                if val != '-1' and val != '40':
+                if val != '-1':
                     x = col_index * tile_size
                     y = row_index * tile_size
+                    if t == 'co':
+                        if val in '012345678':
+                            sprite = Bloc(tile_size, x, y, val)
+                            sprite_group.add(sprite)
 
-                    sprite = Tile(tile_size, x, y, val)
+                    elif t == 'en':
+                        if val == '50':
+                            sprite = Enemy(tile_size, x, y)
+                            sprite_group.add(sprite)
 
-                    if val in '012345678':
-                        self.collidable_sprites.add(sprite)
-                    sprite_group.add(sprite)
+                    elif t == 'non':
+                        if val in ['9', '10', '11', '12', '13', '14', '15', '16']:
+                            sprite = Bloc(tile_size, x, y, val)
+                            sprite_group.add(sprite)
+
+                    elif t == 'con':
+                        if val == '60' or val in '012345678':
+                            sprite = Tile(tile_size, x, y)
+                            sprite_group.add(sprite)
 
         return sprite_group
 
@@ -72,6 +77,11 @@ class Level:
                 if val == '40':
                     sprite = Player((x, y), self.display_surface)
                     self.player.add(sprite)
+
+    def enemy_collision_reverse(self):
+        for enemy in self.enemy_sprites.sprites():
+            if pygame.sprite.spritecollide(enemy, self.constraint_sprites, False):
+                enemy.reverse()
 
     def horizontal_movement_collision(self):
         player = self.player.sprite
@@ -136,7 +146,15 @@ class Level:
     def run(self):
         # enemy
         self.enemy_sprites.update(self.world_shift)
+        self.constraint_sprites.update(self.world_shift)
+        self.enemy_collision_reverse()
         self.enemy_sprites.draw(self.display_surface)
+
+        self.collidable_sprites.update(self.world_shift)
+        self.collidable_sprites.draw(self.display_surface)
+
+        self.noncollidable_sprites.update(self.world_shift)
+        self.noncollidable_sprites.draw(self.display_surface)
 
         # player sprites
         self.player.update()
