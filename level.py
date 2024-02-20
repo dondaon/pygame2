@@ -143,6 +143,11 @@ class Level:
         else:
             self.player_on_ground = False
 
+
+    def check_death(self):
+        if self.player.sprite.rect.top < screen_height:
+            print('true')
+
     def run(self):
         # enemy
         self.enemy_sprites.update(self.world_shift)
