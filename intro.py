@@ -40,6 +40,4 @@ def intro():
                 main()
         pygame.display.flip()
         clock.tick(fps)
-
-
-intro()
+    intro()
