@@ -3,7 +3,7 @@ import sys
 from level import Level
 
 vertical_tile_number = 16
-tile_size = 25
+tile_size = 32
 
 screen_height = vertical_tile_number * tile_size
 screen_width = 1200
@@ -22,12 +22,15 @@ class Game:
         self.level.run()
 
 
+levels = {0: 'design/image.png', 1: 'design/природаа.jpg'}
+
+
 def main(a):
     pygame.init()
 
     pygame.display.set_caption("Slovo BarsiKa")
     bg = pygame.Surface((screen_width, screen_height))
-    fon = pygame.transform.scale(pygame.image.load('природаа.jpg'), (screen_width, screen_height))
+    fon = pygame.transform.scale(pygame.image.load(levels[a]), (screen_width, screen_height))
     bg.blit(fon, (0, 0))
     clock = pygame.time.Clock()
     game = Game(a)

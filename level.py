@@ -1,13 +1,11 @@
 from csv import reader
-
 import main
 from hero import Player
 from monsters import Enemy, Tile, StaticTile
-import pygame
 from main import *
 
 vertical_tile_number = 16
-tile_size = 25
+tile_size = 32
 
 screen_height = vertical_tile_number * tile_size
 screen_width = 1200
@@ -44,6 +42,7 @@ class Level:
         self.collidable_sprites = self.create_tile_group(layout, 'co')
         self.noncollidable_sprites = self.create_tile_group(layout, 'non')
         self.constraint_sprites = self.create_tile_group(layout, 'con')
+        self.water = self.create_tile_group(layout, 'wat')
 
     def create_tile_group(self, layout, t):
         sprite_group = pygame.sprite.Group()
@@ -60,8 +59,8 @@ class Level:
                             sprite_group.add(sprite)
 
                     elif t == 'en':
-                        if val == '50':
-                            sprite = Enemy(tile_size, x, y)
+                        if val == '50' or val == '51' or val == '52':
+                            sprite = Enemy(tile_size, x, y, val)
                             sprite_group.add(sprite)
 
                     elif t == 'non':
@@ -75,6 +74,11 @@ class Level:
                             sprite = Tile(tile_size, x, y)
                             sprite_group.add(sprite)
 
+                    elif t == 'wat':
+                        if val == '10' or val == '9':
+                            sprite = Tile(tile_size, x, y)
+                            sprite_group.add(sprite)
+
         return sprite_group
 
     def player_setup(self, layout):
@@ -83,10 +87,10 @@ class Level:
                 x = col_index * tile_size
                 y = row_index * tile_size
                 if val == '40':
-                    sprite = Player((x, y), self.display_surface)
+                    sprite = Player((x, y))
                     self.player.add(sprite)
                 if val == '90':
-                    hat_surface = pygame.image.load('hat.png').convert_alpha()
+                    hat_surface = pygame.image.load('design/hat.png').convert_alpha()
                     sprite = StaticTile(tile_size, x, y, hat_surface)
                     self.goal.add(sprite)
 
@@ -156,7 +160,8 @@ class Level:
             self.player_on_ground = False
 
     def check_death(self):
-        if self.player.sprite.rect.top > screen_height:
+        if (self.player.sprite.rect.top > screen_height or
+                pygame.sprite.spritecollide(self.player.sprite, self.water, False)):
             main.main(self.lvl)
 
     def check_win(self):
@@ -192,6 +197,7 @@ class Level:
 
         # player sprites
         self.player.update()
+        self.water.update(self.world_shift)
         self.horizontal_movement_collision()
 
         self.get_player_on_ground()

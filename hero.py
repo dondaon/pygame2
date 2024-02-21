@@ -15,7 +15,7 @@ def import_folder(path):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, surface):
+    def __init__(self, pos):
         super().__init__()
         self.import_character_assets()
         self.frame_index = 0

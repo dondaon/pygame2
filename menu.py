@@ -5,7 +5,7 @@ pygame.init()
 res = (740, 640)
 screen = pygame.display.set_mode(res)
 
-fn = pygame.image.load("cat/menu_fon.png")
+fn = pygame.image.load("design/menu_fon.png")
 screen.blit(fn, (0, 0))
 color = (255, 255, 255)
 color_light = (237, 140, 156)  # светлая тема для кнопки
