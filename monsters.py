@@ -3,18 +3,6 @@ from random import randint
 from hero import import_folder
 
 
-class Bloc(pygame.sprite.Sprite):
-    def __init__(self, size, x, y, val):
-        super().__init__()
-        self.image = pygame.Surface((size, size))
-        offset_y = y + size
-        self.image = pygame.image.load(f'blocks/{val}.png').convert_alpha()
-        self.rect = self.image.get_rect(bottomleft=(x, offset_y))
-
-    def update(self, shift):
-        self.rect.x += shift
-
-
 class Tile(pygame.sprite.Sprite):
     def __init__(self, size, x, y):
         super().__init__()
@@ -23,6 +11,12 @@ class Tile(pygame.sprite.Sprite):
 
     def update(self, shift):
         self.rect.x += shift
+
+
+class StaticTile(Tile):
+    def __init__(self, size, x, y, surface):
+        super().__init__(size, x, y)
+        self.image = surface
 
 
 class AnimatedTile(Tile):

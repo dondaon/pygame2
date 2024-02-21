@@ -37,7 +37,7 @@ def intro():
             if event.type == pygame.QUIT:
                 pygame.quit()
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-                main()
+                main(0)
         pygame.display.flip()
         clock.tick(fps)
     intro()

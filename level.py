@@ -1,13 +1,18 @@
 from csv import reader
-from hero import Player
-from monsters import Enemy, Tile, Bloc
-import pygame
 
-vertical_tile_number = 11
-tile_size = 24
+import main
+from hero import Player
+from monsters import Enemy, Tile, StaticTile
+import pygame
+from main import *
+
+vertical_tile_number = 16
+tile_size = 25
 
 screen_height = vertical_tile_number * tile_size
 screen_width = 1200
+
+level_Data = {0: 'level1_data.csv', 1: 'level2_data.csv'}
 
 
 def import_csv_layout(path):
@@ -23,10 +28,11 @@ class Level:
     def __init__(self, lvl, surface):
         # general setup
         self.display_surface = surface
+        self.lvl = lvl
         self.world_shift = 0
         self.current_x = None
         self.collidable_sprites = pygame.sprite.Group()
-        layout = import_csv_layout('level1_data.csv')
+        layout = import_csv_layout(level_Data[lvl])
 
         # player
         self.player = pygame.sprite.GroupSingle()
@@ -36,8 +42,8 @@ class Level:
         # sprites
         self.enemy_sprites = self.create_tile_group(layout, 'en')
         self.collidable_sprites = self.create_tile_group(layout, 'co')
-        self.constraint_sprites = self.create_tile_group(layout, 'con')
         self.noncollidable_sprites = self.create_tile_group(layout, 'non')
+        self.constraint_sprites = self.create_tile_group(layout, 'con')
 
     def create_tile_group(self, layout, t):
         sprite_group = pygame.sprite.Group()
@@ -49,7 +55,8 @@ class Level:
                     y = row_index * tile_size
                     if t == 'co':
                         if val in '012345678':
-                            sprite = Bloc(tile_size, x, y, val)
+                            surface_b = pygame.image.load(f'blocks/{val}.png').convert_alpha()
+                            sprite = StaticTile(tile_size, x, y, surface_b)
                             sprite_group.add(sprite)
 
                     elif t == 'en':
@@ -58,8 +65,9 @@ class Level:
                             sprite_group.add(sprite)
 
                     elif t == 'non':
-                        if val in ['9', '10', '11', '12', '13', '14', '15', '16']:
-                            sprite = Bloc(tile_size, x, y, val)
+                        if val in [str(i) for i in range(9, 21)]:
+                            surface_b = pygame.image.load(f'blocks/{val}.png').convert_alpha()
+                            sprite = StaticTile(tile_size, x, y, surface_b)
                             sprite_group.add(sprite)
 
                     elif t == 'con':
@@ -77,6 +85,10 @@ class Level:
                 if val == '40':
                     sprite = Player((x, y), self.display_surface)
                     self.player.add(sprite)
+                if val == '90':
+                    hat_surface = pygame.image.load('hat.png').convert_alpha()
+                    sprite = StaticTile(tile_size, x, y, hat_surface)
+                    self.goal.add(sprite)
 
     def enemy_collision_reverse(self):
         for enemy in self.enemy_sprites.sprites():
@@ -143,10 +155,27 @@ class Level:
         else:
             self.player_on_ground = False
 
-
     def check_death(self):
-        if self.player.sprite.rect.top < screen_height:
-            print('true')
+        if self.player.sprite.rect.top > screen_height:
+            main.main(self.lvl)
+
+    def check_win(self):
+        if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
+            main.main(self.lvl + 1)
+
+    def check_enemy_collisions(self):
+        enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
+
+        if enemy_collisions:
+            for enemy in enemy_collisions:
+                enemy_center = enemy.rect.centery
+                enemy_top = enemy.rect.top
+                player_bottom = self.player.sprite.rect.bottom
+                if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >= 0:
+                    self.player.sprite.direction.y = -15
+                    enemy.kill()
+                else:
+                    main.main(self.lvl)
 
     def run(self):
         # enemy
@@ -170,3 +199,11 @@ class Level:
 
         self.scroll_x()
         self.player.draw(self.display_surface)
+
+        self.goal.update(self.world_shift)
+        self.goal.draw(self.display_surface)
+
+        self.check_death()
+        self.check_win()
+
+        self.check_enemy_collisions()
