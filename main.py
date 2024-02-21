@@ -22,7 +22,7 @@ class Game:
         self.level.run()
 
 
-levels = {0: 'design/image.png', 1: 'design/природаа.jpg', 2: 'design/roof.png'}
+levels = {0: 'design/image.png', 1: 'design/природаа.jpg'}
 
 
 def main(a):

@@ -10,7 +10,7 @@ tile_size = 32
 screen_height = vertical_tile_number * tile_size
 screen_width = 1200
 
-level_Data = {0: 'level2_data.csv', 1: 'level1_data.csv', 2: 'level3_data.csv'}
+level_Data = {0: 'level1_data.csv', 1: 'level2_data.csv'}
 
 
 def import_csv_layout(path):
@@ -70,7 +70,7 @@ class Level:
                             sprite_group.add(sprite)
 
                     elif t == 'con':
-                        if val == '60' or val == "80" or val in '012345678':
+                        if val == '60' or val in '012345678':
                             sprite = Tile(tile_size, x, y)
                             sprite_group.add(sprite)
 
