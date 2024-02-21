@@ -10,7 +10,7 @@ tile_size = 32
 screen_height = vertical_tile_number * tile_size
 screen_width = 1200
 
-level_Data = {0: 'level1_data.csv', 1: 'level2_data.csv'}
+level_Data = {0: 'level1_data.csv', 1: 'level2_data.csv', 2: 'level3_data.csv'}
 
 
 def import_csv_layout(path):
