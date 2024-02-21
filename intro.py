@@ -3,7 +3,7 @@ from main import main
 
 
 def intro():
-    size = width, height = (1200, 384)
+    size = width, height = (1200, 512)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     fps = 60
