@@ -8,7 +8,7 @@ def intro():
     clock = pygame.time.Clock()
     fps = 60
 
-    fon = pygame.transform.scale(pygame.image.load('intro.jpg'), (1200, 384))
+    fon = pygame.transform.scale(pygame.image.load('design/intro.jpg'), (1200, 512))
     screen.blit(fon, (0, 0))
     text = ['Кот по кличке Барсик был уважаемым членом уличной банды в городе. Однако, однажды его лидер выгнал его из банды,',
             'обвинив невиновного. Гордый и обиженный Барсик решил, что пришло время мстить бывшим "друзьям".',

@@ -59,8 +59,8 @@ class Level:
                             sprite_group.add(sprite)
 
                     elif t == 'en':
-                        if val == '50':
-                            sprite = Enemy(tile_size, x, y)
+                        if val == '50' or val == '51' or val == '52':
+                            sprite = Enemy(tile_size, x, y, val)
                             sprite_group.add(sprite)
 
                     elif t == 'non':
@@ -90,7 +90,7 @@ class Level:
                     sprite = Player((x, y))
                     self.player.add(sprite)
                 if val == '90':
-                    hat_surface = pygame.image.load('hat.png').convert_alpha()
+                    hat_surface = pygame.image.load('design/hat.png').convert_alpha()
                     sprite = StaticTile(tile_size, x, y, hat_surface)
                     self.goal.add(sprite)
 
