@@ -3,6 +3,7 @@ import main
 from hero import Player
 from monsters import Enemy, Tile, StaticTile
 from main import *
+from end import the_end
 
 vertical_tile_number = 16
 tile_size = 32
@@ -57,6 +58,9 @@ class Level:
                             surface_b = pygame.image.load(f'blocks/{val}.png').convert_alpha()
                             sprite = StaticTile(tile_size, x, y, surface_b)
                             sprite_group.add(sprite)
+                        if val == '80':
+                            sprite = Tile(tile_size, x, y)
+                            sprite_group.add(sprite)
 
                     elif t == 'en':
                         if val == '50' or val == '51' or val == '52':
@@ -70,7 +74,7 @@ class Level:
                             sprite_group.add(sprite)
 
                     elif t == 'con':
-                        if val == '60' or val in '012345678':
+                        if val == '60' or val in '012345678' or val == '80':
                             sprite = Tile(tile_size, x, y)
                             sprite_group.add(sprite)
 
@@ -91,6 +95,8 @@ class Level:
                     self.player.add(sprite)
                 if val == '90':
                     hat_surface = pygame.image.load('design/hat.png').convert_alpha()
+                    hat_surface = pygame.transform.scale(hat_surface, (42, 30))
+
                     sprite = StaticTile(tile_size, x, y, hat_surface)
                     self.goal.add(sprite)
 
@@ -166,7 +172,10 @@ class Level:
 
     def check_win(self):
         if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
-            main.main(self.lvl + 1)
+            if self.lvl != 2:
+                main.main(self.lvl + 1)
+            else:
+                the_end()
 
     def check_enemy_collisions(self):
         enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
