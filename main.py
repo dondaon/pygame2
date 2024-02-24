@@ -10,19 +10,7 @@ screen_width = 1200
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 
-class Game:
-    def __init__(self, lvl):
-        # game attributes
-        self.create_level(lvl)
-
-    def create_level(self, current_level):
-        self.level = Level(current_level, screen)
-
-    def run(self):
-        self.level.run()
-
-
-levels = {0: 'design/image.png', 1: 'design/природаа.jpg'}
+levels = {0: 'design/image.png', 1: 'design/природаа.jpg', 2: 'design/roof.png'}
 
 
 def main(a):
@@ -33,7 +21,7 @@ def main(a):
     fon = pygame.transform.scale(pygame.image.load(levels[a]), (screen_width, screen_height))
     bg.blit(fon, (0, 0))
     clock = pygame.time.Clock()
-    game = Game(a)
+    level = Level(a, screen)
 
     while True:
         for event in pygame.event.get():
@@ -42,7 +30,7 @@ def main(a):
                 sys.exit()
 
         screen.blit(bg, (0, 0))
-        game.run()
+        level.run()
 
         pygame.display.update()
         clock.tick(60)
