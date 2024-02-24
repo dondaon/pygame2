@@ -52,7 +52,7 @@ class Level:
 
         for row_index, row in enumerate(layout):
             for col_index, val in enumerate(row):
-                if val != '-1':
+                if val != '-1':  # индекс фона
                     x = col_index * tile_size
                     y = row_index * tile_size
                     if t == 'co':
@@ -92,10 +92,10 @@ class Level:
             for col_index, val in enumerate(row):
                 x = col_index * tile_size
                 y = row_index * tile_size
-                if val == '40':
+                if val == '40':  # Проверка наличия спрайта игрока
                     sprite = Player((x, y))
                     self.player.add(sprite)
-                if val == '90':
+                if val == '90':  # Проверка наличия шапочки
                     hat_surface = pygame.image.load('design/hat.png').convert_alpha()
                     hat_surface = pygame.transform.scale(hat_surface, (42, 30))
 
