@@ -1,6 +1,9 @@
 import pygame
 from main import main
 
+pygame.display.set_caption("Introduction")
+pygame.display.set_icon(pygame.image.load("icon.jpg"))
+
 
 def intro():
     size = width, height = (1200, 512)

@@ -8,10 +8,12 @@ from end import the_end
 vertical_tile_number = 16
 tile_size = 32
 
+pygame.display.set_icon(pygame.image.load("icon.jpg"))
+
 screen_height = vertical_tile_number * tile_size
 screen_width = 1200
 
-level_Data = {0: 'level1_data.csv', 1: 'level2_data.csv'}
+level_Data = {0: 'level1_data.csv', 1: 'level2_data.csv', 2:'level3_data.csv'}
 
 
 def import_csv_layout(path):
@@ -25,7 +27,7 @@ def import_csv_layout(path):
 
 class Level:
     def __init__(self, lvl, surface):
-        # general setup
+        # главный сетап
         self.display_surface = surface
         self.lvl = lvl
         self.world_shift = 0
@@ -33,12 +35,12 @@ class Level:
         self.collidable_sprites = pygame.sprite.Group()
         layout = import_csv_layout(level_Data[lvl])
 
-        # player
+        # игрок
         self.player = pygame.sprite.GroupSingle()
         self.goal = pygame.sprite.GroupSingle()
         self.player_setup(layout)
 
-        # sprites
+        # спрайты
         self.enemy_sprites = self.create_tile_group(layout, 'en')
         self.collidable_sprites = self.create_tile_group(layout, 'co')
         self.noncollidable_sprites = self.create_tile_group(layout, 'non')
@@ -192,7 +194,7 @@ class Level:
                     main.main(self.lvl)
 
     def run(self):
-        # enemy
+        # враги
         self.enemy_sprites.update(self.world_shift)
         self.constraint_sprites.update(self.world_shift)
         self.enemy_collision_reverse()
@@ -204,7 +206,7 @@ class Level:
         self.noncollidable_sprites.update(self.world_shift)
         self.noncollidable_sprites.draw(self.display_surface)
 
-        # player sprites
+        # спрайты игрока
         self.player.update()
         self.water.update(self.world_shift)
         self.horizontal_movement_collision()

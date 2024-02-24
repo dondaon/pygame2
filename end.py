@@ -1,5 +1,8 @@
 import pygame
 
+pygame.display.set_caption("You win!")
+pygame.display.set_icon(pygame.image.load("icon.jpg"))
+
 
 def the_end():
     size = width, height = (1200, 512)
@@ -7,13 +10,13 @@ def the_end():
     clock = pygame.time.Clock()
     fps = 60
 
-    fon = pygame.transform.scale(pygame.image.load('design/output_348845950_0.jpg'), (1200, 512))
+    fon = pygame.transform.scale(pygame.image.load('barsikEND2.jpg'), (1200, 512))
     screen.blit(fon, (0, 0))
     text = ['///']
 
     pygame.font.init()
-    font = pygame.font.Font(None, 27)
-    font2 = pygame.font.Font(None, 60)
+    font = pygame.font.Font(None, 30)
+    font2 = pygame.font.Font(None, 70)
     text2 = font2.render('You win!', True, (255, 255, 255))
     text3 = font.render('Нажмите любую клавишу, чтобы exit', True, (255, 255, 255))
     text_coord = 150
@@ -35,5 +38,4 @@ def the_end():
 
         pygame.display.flip()
         clock.tick(fps)
-
     the_end()
