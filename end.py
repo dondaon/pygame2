@@ -10,7 +10,7 @@ def the_end():
     clock = pygame.time.Clock()
     fps = 60
 
-    fon = pygame.transform.scale(pygame.image.load('barsikEND2.jpg'), (1200, 512))
+    fon = pygame.transform.scale(pygame.image.load('design/barsikEND2.jpg'), (1200, 512))
     screen.blit(fon, (0, 0))
     text = ['///']
 

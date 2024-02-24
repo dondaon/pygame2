@@ -13,7 +13,7 @@ pygame.display.set_icon(pygame.image.load("icon.jpg"))
 screen_height = vertical_tile_number * tile_size
 screen_width = 1200
 
-level_Data = {0: 'level1_data.csv', 1: 'level2_data.csv', 2:'level3_data.csv'}
+level_Data = {0: 'levels/level1_data.csv', 1: 'levels/level2_data.csv', 2: 'levels/level3_data.csv'}
 
 
 def import_csv_layout(path):
