@@ -4,6 +4,8 @@ from intro import intro
 pygame.init()
 res = (740, 640)
 screen = pygame.display.set_mode(res)
+pygame.display.set_caption("Menu")
+pygame.display.set_icon(pygame.image.load("icon.jpg"))
 
 fn = pygame.image.load("design/menu_fon.png")
 screen.blit(fn, (0, 0))
