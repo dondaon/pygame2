@@ -20,7 +20,7 @@ smallfont = pygame.font.SysFont('Corbel', 35)
 text = smallfont.render('Quit', True, color)
 text2 = smallfont.render('Start', True, color)
 
-pygame.mixer.music.load("menu_intro.mp3")
+pygame.mixer.music.load("sound/menu_intro.mp3")
 pygame.mixer.music.play(-1)
 
 while True:
