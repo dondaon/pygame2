@@ -18,6 +18,9 @@ smallfont = pygame.font.SysFont('Corbel', 35)
 text = smallfont.render('Quit', True, color)
 text2 = smallfont.render('Start', True, color)
 
+pygame.mixer.music.load("3d20874f20174bd.mp3")
+pygame.mixer.music.play(-1)
+
 while True:
     mouse = pygame.mouse.get_pos()
     for ev in pygame.event.get():
