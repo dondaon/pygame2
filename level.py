@@ -34,6 +34,8 @@ class Level:
         self.current_x = None
         self.collidable_sprites = pygame.sprite.Group()
         layout = import_csv_layout(level_Data[lvl])
+        pygame.mixer.music.load("48bb90af8e1e401.mp3")
+        pygame.mixer.music.play(-1)
 
         # игрок
         self.player = pygame.sprite.GroupSingle()
