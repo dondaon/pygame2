@@ -1,7 +1,11 @@
 import pygame
 
+pygame.init()
 pygame.display.set_caption("You win!")
 pygame.display.set_icon(pygame.image.load("icon.jpg"))
+
+pygame.mixer.music.load("end.mp3")
+pygame.mixer.music.play(-1)
 
 
 def the_end():
